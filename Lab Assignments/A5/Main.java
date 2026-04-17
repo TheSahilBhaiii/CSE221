@@ -1,65 +1,86 @@
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.*;
 public class Main{
-    static char grid[][];
-    static boolean visited[][];
-    static int R,H;
-
-    static int dr[]={-1,1,0,0};
-    static int dc[]={0,0,-1,1};
     public static void main(String[] args) throws Exception{
-        
         BufferedReader bf=new BufferedReader(new InputStreamReader(System.in));
-
         PrintWriter pw=new PrintWriter(System.out);
+        StringTokenizer st=new StringTokenizer(bf.readLine());
 
-        String firstLine =bf.readLine();
-        if(firstLine==null)return;
-
-        StringTokenizer st=new StringTokenizer(firstLine);
-
-        R=Integer.parseInt(st.nextToken());
-        H=Integer.parseInt(st.nextToken());
-
-        grid=new char[R][H];
-        visited=new boolean[R][H];
-
-        for(int i=0;i<R;i++){
-            grid[i]=bf.readLine().toCharArray();
-        }
-
-        int maxDiamonds=0;
-
+        int n=Integer.parseInt(st.nextToken());
+        int m=Integer.parseInt(st.nextToken());
+        int source=Integer.parseInt(st.nextToken());
+        int dest=Integer.parseInt(st.nextToken());
         
-        for(int i=0;i<R;i++){
-            for(int j=0;j<H;j++){
-                if(grid[i][j]!='#' && !visited[i][j]){
-                int currentIslandDiamonds=dfs(i,j);
-                maxDiamonds=Math.max(maxDiamonds,currentIslandDiamonds);
+
+        ArrayList<Integer> adj[]=new ArrayList[n+1];
+
+        for(int i=1;i<=n;i++){
+            adj[i]=new ArrayList<>();
+        }
+        if(m>0){
+        StringTokenizer stU=new StringTokenizer(bf.readLine());
+        StringTokenizer stV=new StringTokenizer(bf.readLine());
+        
+        for(int i=0;i<m;i++){
+        int u=Integer.parseInt(stU.nextToken());
+        int v=Integer.parseInt(stV.nextToken());
+
+        adj[u].add(v);
+        adj[v].add(u);
+        }
+        for(int i=1;i<=n;i++){
+            Collections.sort(adj[i]);
+        }
+    }
+        int dist[]=new int[n+1];
+        int parent[]=new int[n+1];
+
+        Arrays.fill(dist,-1);
+        Arrays.fill(parent,-1);
+
+        Queue<Integer> q=new LinkedList<>();
+
+        q.add(source);
+        dist[source]=0;
+
+        while(!q.isEmpty()){
+            int current=q.poll();
+
+            if(current==dest){
+                break;
+            }
+
+            for(int i=0;i<adj[current].size();i++){
+                int neighbor=adj[current].get(i);
+
+                if(dist[neighbor]==-1){
+                    dist[neighbor]=dist[current]+1;
+                    parent[neighbor]=current;
+                    q.add(neighbor);
                 }
             }
         }
-        pw.println(maxDiamonds);
-        pw.flush();
-        }
-        
-    static int dfs(int r,int c){
-        visited[r][c]=true;
 
-        int diamondCount=0;
-        if(grid[r][c]=='D'){
-            diamondCount=1;
+        if(dist[dest]==-1){
+            pw.println("-1");
         }
-        for(int i=0;i<4;i++){
-            int nextR=r+dr[i];
-            int nextC=c+dc[i];
+        else{
+            pw.println(dist[dest]);
 
-            if(nextR>=0 && nextR<R && nextC>=0 && nextC<H){
-               if(grid[nextR][nextC]!='#' && !visited[nextR][nextC]){
-                diamondCount+=dfs(nextR,nextC);
-               }
+            int curr=dest;
+            ArrayList<Integer> path=new ArrayList<>();
+            while(curr!=-1){
+                path.add(curr);
+                curr=parent[curr];
+            }
+            Collections.reverse(path);
+
+            for(int i=0;i<path.size();i++){
+                pw.print(path.get(i)+" ");
             }
         }
-        return diamondCount;
+        pw.println();
+        pw.flush();
     }
 }

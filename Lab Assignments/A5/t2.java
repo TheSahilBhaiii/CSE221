@@ -14,20 +14,16 @@ public class t2 {
         StringTokenizer stU=new StringTokenizer(bf.readLine());
         StringTokenizer stV=new StringTokenizer(bf.readLine());
 
-        for(int i=0;i<=n;i++){
+        for(int i=1;i<=n;i++){
             adj[i]=new ArrayList<>();
         }
 
-        for(int i=0;i<=n;i++){
+        for(int i=0;i<m;i++){
             int u=Integer.parseInt(stU.nextToken());
             int v=Integer.parseInt(stV.nextToken());
 
             adj[u].add(v);
             adj[v].add(u);
-        }
-        
-        for(int i=1;i<=n;i++){
-            Collections.sort(adj[i]);
         }
 
         int color[]=new int[n+1];
