@@ -17,8 +17,7 @@ public class t7{
         int n=Integer.parseInt(st.nextToken());
         int m=Integer.parseInt(st.nextToken());
 
-        ArrayList<Integer> tempadj[]=new ArrayList[n+1];
-        adj=tempadj;
+        adj=new ArrayList[n+1];
 
         for(int i=0;i<=n;i++){
             adj[i]=new ArrayList<>();

@@ -1,86 +1,66 @@
 import java.io.*;
-import java.lang.reflect.Array;
 import java.util.*;
 public class Main{
+    static PrintWriter pw;
+    static ArrayList<Integer> adj[];
+    static int state[];
     public static void main(String[] args) throws Exception{
         BufferedReader bf=new BufferedReader(new InputStreamReader(System.in));
-        PrintWriter pw=new PrintWriter(System.out);
+        pw=new PrintWriter(System.out);
         StringTokenizer st=new StringTokenizer(bf.readLine());
 
         int n=Integer.parseInt(st.nextToken());
         int m=Integer.parseInt(st.nextToken());
-        int source=Integer.parseInt(st.nextToken());
-        int dest=Integer.parseInt(st.nextToken());
         
-
-        ArrayList<Integer> adj[]=new ArrayList[n+1];
+        adj=new ArrayList[n+1];
 
         for(int i=1;i<=n;i++){
             adj[i]=new ArrayList<>();
         }
-        if(m>0){
-        StringTokenizer stU=new StringTokenizer(bf.readLine());
-        StringTokenizer stV=new StringTokenizer(bf.readLine());
-        
         for(int i=0;i<m;i++){
-        int u=Integer.parseInt(stU.nextToken());
-        int v=Integer.parseInt(stV.nextToken());
+        st=new StringTokenizer(bf.readLine());
+        int u=Integer.parseInt(st.nextToken());
+        int v=Integer.parseInt(st.nextToken());
 
         adj[u].add(v);
-        adj[v].add(u);
+        
         }
+        state=new int[n+1];
+        boolean hasCycle=false;
+
         for(int i=1;i<=n;i++){
-            Collections.sort(adj[i]);
-        }
-    }
-        int dist[]=new int[n+1];
-        int parent[]=new int[n+1];
-
-        Arrays.fill(dist,-1);
-        Arrays.fill(parent,-1);
-
-        Queue<Integer> q=new LinkedList<>();
-
-        q.add(source);
-        dist[source]=0;
-
-        while(!q.isEmpty()){
-            int current=q.poll();
-
-            if(current==dest){
-                break;
-            }
-
-            for(int i=0;i<adj[current].size();i++){
-                int neighbor=adj[current].get(i);
-
-                if(dist[neighbor]==-1){
-                    dist[neighbor]=dist[current]+1;
-                    parent[neighbor]=current;
-                    q.add(neighbor);
+            if(state[i]==0){
+                if(dfs(i)){
+                    hasCycle=true;
+                    break;
                 }
             }
         }
-
-        if(dist[dest]==-1){
-            pw.println("-1");
+        if(hasCycle){
+            pw.println("YES");
         }
         else{
-            pw.println(dist[dest]);
-
-            int curr=dest;
-            ArrayList<Integer> path=new ArrayList<>();
-            while(curr!=-1){
-                path.add(curr);
-                curr=parent[curr];
-            }
-            Collections.reverse(path);
-
-            for(int i=0;i<path.size();i++){
-                pw.print(path.get(i)+" ");
-            }
+            pw.println("NO");
         }
         pw.println();
         pw.flush();
     }
-}
+     static boolean dfs(int current){
+        state[current]=1;
+
+        for(int i=0;i<adj[current].size();i++){
+            int neighbor=adj[current].get(i);
+
+            if(state[neighbor]==1){
+                return true;
+            }
+            if(state[neighbor]==0){
+                if(dfs(neighbor)){
+                    return true;
+                }
+            }
+        }
+        state[current]=2;
+        return false;
+     }
+    }
