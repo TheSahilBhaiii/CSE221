@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.*;
-public class Main{
+public class t5 {
+    
     static class Edge{
         int to;
         long weight;
@@ -21,7 +22,7 @@ public class Main{
             this.parity=parity;
         }
         public int compareTo(Pair other){
-            return Long.compare(this.dist, other.dist);
+            return Long.compare(this.dist,other.dist);
         }
     }
     public static void main(String[] args) throws Exception{
@@ -35,7 +36,7 @@ public class Main{
         int U[]=new int[m];
         int V[]=new int[m];
         long W[]=new long[m];
-        
+
         st=new StringTokenizer(bf.readLine());
         for(int i=0;i<m;i++){
             while(!st.hasMoreTokens()){
@@ -57,42 +58,45 @@ public class Main{
             }
             W[i]=Long.parseLong(st.nextToken());
         }
+
         ArrayList<Edge> adj[]=new ArrayList[n+1];
+
         for(int i=1;i<=n;i++){
             adj[i]=new ArrayList<>();
         }
+
         for(int i=0;i<m;i++){
             adj[U[i]].add(new Edge(V[i], W[i]));
         }
+
         long dist[][]=new long[n+1][2];
         for(int i=1;i<=n;i++){
             dist[i][0]=Long.MAX_VALUE;
             dist[i][1]=Long.MAX_VALUE;
         }
-        
         PriorityQueue<Pair> pq=new PriorityQueue<>();
-        
+
+        pq.add(new Pair(1,0,-1));
         dist[1][0]=0;
         dist[1][1]=0;
-        pq.add(new Pair(1,0,-1));
 
         while(!pq.isEmpty()){
             Pair curr=pq.poll();
             int u=curr.Node;
-            long ds=curr.dist;
+            long d=curr.dist;
             int p=curr.parity;
-            
-            if(p!=-1 && ds>dist[u][p]) continue;
+
+            if(p!=-1 && d>dist[u][p]) continue;
 
             for(Edge edge:adj[u]){
                 int v=edge.to;
                 long weight=edge.weight;
                 int nextParity=(int)(weight%2);
 
-                if (p == nextParity) continue;
+                if(p==nextParity) continue;
 
-                if(ds+weight<dist[v][nextParity]){
-                    dist[v][nextParity]=ds+weight;
+                if(d+weight <dist[v][nextParity]){
+                    dist[v][nextParity]=d+weight;
                     pq.add(new Pair(v, dist[v][nextParity], nextParity));
                 }
             }
