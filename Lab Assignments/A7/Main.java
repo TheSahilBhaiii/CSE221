@@ -1,110 +1,96 @@
 import java.io.*;
 import java.util.*;
 public class Main{
-    static class Edge{
-        int to;
-        long weight;
+        static class Edge{
+            int to;
+            long weight;
 
-        public Edge(int to,long weight){
-            this.to=to;
-            this.weight=weight;
-        }
-    }
-    static class Pair implements Comparable<Pair>{
-        int Node;
-        long dist;
-        int parity;
-
-        public Pair(int Node,long dist,int parity){
-            this.Node=Node;
-            this.dist=dist;
-            this.parity=parity;
-        }
-        public int compareTo(Pair other){
-            return Long.compare(this.dist, other.dist);
-        }
-    }
-    public static void main(String[] args) throws Exception{
-        BufferedReader bf=new BufferedReader(new InputStreamReader(System.in));
-        PrintWriter pw=new PrintWriter(System.out);
-        StringTokenizer st=new StringTokenizer(bf.readLine());
-
-        int n=Integer.parseInt(st.nextToken());
-        int m=Integer.parseInt(st.nextToken());
-
-        int U[]=new int[m];
-        int V[]=new int[m];
-        long W[]=new long[m];
-        
-        st=new StringTokenizer(bf.readLine());
-        for(int i=0;i<m;i++){
-            while(!st.hasMoreTokens()){
-                st=new StringTokenizer(bf.readLine());
+            public Edge(int to,long weight){
+                this.to=to;
+                this.weight=weight;
             }
-            U[i]=Integer.parseInt(st.nextToken());
         }
-        st=new StringTokenizer(bf.readLine());
-        for(int i=0;i<m;i++){
-            while(!st.hasMoreTokens()){
-                st=new StringTokenizer(bf.readLine());
-            }
-            V[i]=Integer.parseInt(st.nextToken());
-        }
-        st=new StringTokenizer(bf.readLine());
-        for(int i=0;i<m;i++){
-            while(!st.hasMoreTokens()){
-                st=new StringTokenizer(bf.readLine());
-            }
-            W[i]=Long.parseLong(st.nextToken());
-        }
-        ArrayList<Edge> adj[]=new ArrayList[n+1];
-        for(int i=1;i<=n;i++){
-            adj[i]=new ArrayList<>();
-        }
-        for(int i=0;i<m;i++){
-            adj[U[i]].add(new Edge(V[i], W[i]));
-        }
-        long dist[][]=new long[n+1][2];
-        for(int i=1;i<=n;i++){
-            dist[i][0]=Long.MAX_VALUE;
-            dist[i][1]=Long.MAX_VALUE;
-        }
-        
-        PriorityQueue<Pair> pq=new PriorityQueue<>();
-        
-        dist[1][0]=0;
-        dist[1][1]=0;
-        pq.add(new Pair(1,0,-1));
+        static class Pair implements Comparable<Pair>{
+            int Node;
+            long dist;
 
-        while(!pq.isEmpty()){
-            Pair curr=pq.poll();
-            int u=curr.Node;
-            long ds=curr.dist;
-            int p=curr.parity;
+            public Pair(int Node,long dist){
+                this.Node=Node;
+                this.dist=dist;
+            }
+            public int compareTo(Pair other){
+                return Long.compare(this.dist, other.dist);
+            }
+        }
+    
+        public static void main(String[] args) throws Exception{
+            BufferedReader bf=new BufferedReader(new InputStreamReader(System.in));
+            PrintWriter pw=new PrintWriter(System.out);
+            StringTokenizer st=new StringTokenizer(bf.readLine());
+
+            int n = Integer.parseInt(st.nextToken());
+            int m = Integer.parseInt(st.nextToken());
+            int s = Integer.parseInt(st.nextToken());
+            int d = Integer.parseInt(st.nextToken());
+
+            ArrayList<Edge> adj[]=new ArrayList[n+1];
+
+            for(int i=1;i<=n;i++){
+                adj[i]=new ArrayList<>();
+            }
             
-            if(p!=-1 && ds>dist[u][p]) continue;
+            for(int i=0;i<m;i++){
+                st=new StringTokenizer(bf.readLine());
+                int U=Integer.parseInt(st.nextToken());
+                int V=Integer.parseInt(st.nextToken());
+                long W=Long.parseLong(st.nextToken());
 
-            for(Edge edge:adj[u]){
-                int v=edge.to;
-                long weight=edge.weight;
-                int nextParity=(int)(weight%2);
-
-                if (p == nextParity) continue;
-
-                if(ds+weight<dist[v][nextParity]){
-                    dist[v][nextParity]=ds+weight;
-                    pq.add(new Pair(v, dist[v][nextParity], nextParity));
-                }
+                adj[U].add(new Edge(V,W));
+                adj[V].add(new Edge(U, W));
             }
-        }
-        long ans=Math.min(dist[n][0],dist[n][1]);
+            long dist1[]=new long[n+1];
+            long dist2[]=new long[n+1];
+            Arrays.fill(dist1,Long.MAX_VALUE);
+            Arrays.fill(dist2,Long.MAX_VALUE);
 
-        if(ans==Long.MAX_VALUE){
-            pw.println("-1");
+            PriorityQueue<Pair> pq=new PriorityQueue<>();
+
+            dist1[s]=0;
+            pq.add(new Pair(s,0));
+
+            while(!pq.isEmpty()){
+                Pair curr=pq.poll();
+                int u=curr.Node;
+                long ds=curr.dist;
+                
+
+                if(ds>dist2[u]) continue;
+
+                for(Edge edge:adj[u]){
+                    int v=edge.to;
+                    long weight=edge.weight;
+                    long nextDist=curr.dist+weight;
+
+                    if(nextDist < dist1[v]){
+                        dist2[v]=dist1[v];
+                        dist1[v]=nextDist;
+
+                        pq.add(new Pair(v,dist1[v]));
+                    }
+                    else if(nextDist>dist1[v] && nextDist<dist2[v]){
+                        dist2[v]=nextDist;
+                        pq.add(new Pair(v,dist2[v]));
+                    }
+                }
+
+            }
+            if(dist2[d]==Long.MAX_VALUE){
+                pw.println("-1");
+            }
+            else{
+                pw.println(dist2[d]);
+            }
+            pw.flush();
         }
-        else{
-            pw.println(ans);
-        }
-        pw.flush();
     }
-}
+
